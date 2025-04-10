@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+ <style>
+    @media screen and (max-width: 480px){
+        .card{
+            max-width: 400px;
+            
+        }
+    }
+ </style>   
+</head>
+<body>
+    <div style="background-size:cover; height: 500px;">
+            <div class="card" style="width: 600px; margin: 0px auto; padding: 20px; background-color: white; border: 1px solid #e7e9eb; border-radius: 2%;">
+                <h4>Hi {{name}},</h4>
+                {%if email_for == 'unlock'%}
+                <p>You are requested unlock your folder {{folder_name}}</p>
+                {%elif email_for == 'delete'%}
+                <p>You are requested delete your folder {{folder_name}}</p>
+                {%elif email_for == 'download'%}
+                <p>You are requested download your folder {{folder_name}}</p>
+                {%endif%}
+                <p>Key:{{key}}</p>
+                <p>Password:{{password}}</p>
+                <p><a class="text-decoration-none" href="{%url 'login'%}">Remote Lock</a></p>
+              </div>      
+    </div>   
+</body>
+</html>

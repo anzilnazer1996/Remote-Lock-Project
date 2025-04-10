@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<main class="h-full pb-16 overflow-y-auto">
+  <div class="container grid px-6 mx-auto">
+    <!-- With actions -->
+
+    <div class="grid grid-cols-12 items-center my-4">
+      <div class="col-span-8">
+        <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300 my-6">
+          Reports
+        </h4>
+      </div>
+      <div class="col-span-4 flex justify-end space-x-4">
+          <button id="download-pdf" class="px-5 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+            pdf
+          </button>
+    </div>
+    </div>
+
+    <div class="w-full overflow-hidden rounded-lg shadow-xs">
+      <div class="w-full overflow-x-auto">
+        <table id="report-table" class="w-full whitespace-no-wrap table-fixed">
+          <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+            {% for report in reports%}
+            <tr class="text-gray-700 dark:text-gray-400">
+              <td class="px-4 py-3 text-sm">
+                {{ report.folder_name }} {{report.action}} at {{report.action_date_time | date:'d-m-Y H:i'}}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+<!-- Add the jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+  document.getElementById('download-pdf').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Set up title "Reports" in the center of the page
+    const title = 'Reports';
+    const titleWidth = doc.getTextWidth(title);
+    const pageWidth = doc.internal.pageSize.width;
+    const titleX = (pageWidth - titleWidth) / 2;  // Center the title
+
+    // Add the title to the PDF
+    doc.setFontSize(18);
+    doc.text(title, titleX, 20);  // 20 is the Y-coordinate for the title
+
+    // Get the table body element
+    const table = document.querySelector('#report-table tbody');
+
+    // Extract table rows and create PDF content
+    let yPosition = 30;  // Start the content from y=30, below the title
+    const gap = 3; // Gap between records in pixels (adjust as necessary)
+    const rows = table.querySelectorAll('tr');
+    
+    // Set font size for the content
+    doc.setFontSize(12);  
+
+    rows.forEach(row => {
+      const cellText = row.querySelector('td').innerText;
+      
+      // Add each row content to the PDF
+      doc.text(cellText, 10, yPosition);
+      
+      // Increase the yPosition by the height of the row plus the gap
+      yPosition += 7 + gap;  // Adjust '7' to control row height and 'gap' for space
+    });
+
+    // Save the PDF
+    doc.save('{{user.first_name}}{{user.last_name}}-reports.pdf');
+  });
+</script>
+
+{% endblock %}
+

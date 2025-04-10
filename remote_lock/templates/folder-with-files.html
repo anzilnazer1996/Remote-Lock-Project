@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<main class="h-full pb-16 overflow-y-auto">
+    <div class="container px-6 mx-auto my-6 grid">
+      <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <!-- Folder Card -->
+        <div class="flex items-center justify-between space-x-4">
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center justify-center w-12 h-12 bg-purple-600 text-white rounded-full">
+              <!-- Folder Icon (using font awesome) -->
+              <i class="fas fa-folder"></i>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-700 dark:text-white">{{folder.name}}</h2>
+          </div>
+          
+          <!-- Download Button for Folder -->
+          <a href="{%url 'download-folder' folder.uuid%}">
+            <button class="flex items-center justify-center px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="View">
+              <svg class="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/>
+              </svg>
+            </button>
+          </a>
+        </div>
+  
+        <!-- File List -->
+        <div class="mt-6">
+          <ul class="space-y-4">
+            {% for file in folder.files.all %}
+            <li class="flex items-center justify-between space-x-4 p-3 bg-gray-100 rounded-lg shadow-sm hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600">
+              <div class="flex items-center space-x-4">
+                <div class="flex items-center justify-center w-8 h-8 bg-gray-300 rounded-lg">
+                  <!-- File Icon -->
+                  <i class="fas fa-file-alt"></i>
+                </div>
+                <span class="text-gray-700 dark:text-white">{{file.file.name|basename}}</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <a href="{{file.file.url}}">
+                    <button
+                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                    aria-label="View"
+                                  >
+                                  <svg
+                      class="w-5 h-5"
+                      aria-hidden="true"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                                  >
+                                  <path
+                    d="M10 4.4C3.4 4.4 0 10 0 10s3.4 5.6 10 5.6S20 10 20 10s-3.4-5.6-10-5.6zm0 9.6c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"
+                                  ></path>
+                                  <circle cx="10" cy="10" r="2.5"></circle>
+                                  </svg>
+                    </button>
+                </a>
+
+              <a href="{{ file.file.url }}" download="{{ file.file.name }}">
+                <button class="flex items-center justify-center px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="View">
+                  <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/>
+                  </svg>
+                </button>
+              </a>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  
+{% endblock %}

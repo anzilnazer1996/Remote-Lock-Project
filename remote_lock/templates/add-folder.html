@@ -1,0 +1,72 @@
+
+{%extends 'base.html'%}
+{%block main%}
+<main class="h-full pb-16 overflow-y-auto">
+    <form action="" method="post" enctype="multipart/form-data">
+      {%csrf_token%}
+    <div class="container px-6 mx-auto grid">
+      <h2
+        class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
+      >
+        Add a Folder
+      </h2>
+      <div
+        class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800"
+      >
+        <label class="block text-sm">
+          <span class="text-gray-700 dark:text-gray-400">Folder Name</span><span class="text-red-600">*</span>
+          <input
+                type="text"
+                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                placeholder=""
+                name="name"
+                readonly
+                id="folder_name"
+              /> 
+        </label>
+
+        <label class="block text-sm mt-4">
+            <span class="text-gray-700 dark:text-gray-400">Folder</span><span class="text-red-600">*</span>
+            <input
+                type="file"
+                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                placeholder=""
+                name="files"
+                id="folder_input"
+                webkitdirectory directory multiple
+                required
+                onchange="setFolderName()"
+              /> 
+          </label>
+          <div class="flex items-center justify-end">
+            <button type="submit" class="px-5 py-3 my-6 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                Submit
+              </button>
+          </div>
+        </div>
+    </div>
+</form>
+  </main>
+
+  <script>
+    // Function to automatically set folder name
+    function setFolderName() {
+        const input = document.getElementById('folder_input');
+        const folderNameInput = document.getElementById('folder_name');
+
+        // Get the list of selected files
+        const files = input.files;
+
+        if (files.length > 0) {
+            // Extract the folder name from the file path
+            const firstFilePath = files[0].webkitRelativePath;  // File path relative to the folder
+            const folderName = firstFilePath.split('/')[0];  // The first part of the path is the folder name
+
+            // Set the folder name input field value
+            folderNameInput.value = folderName;
+        }
+    }
+</script>  
+
+
+{%endblock%}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<main class="h-full pb-16 overflow-y-auto">
+    <form action="" method="post" enctype="multipart/form-data">
+      {%csrf_token%}
+    <div class="container px-6 mx-auto grid">
+        <h2
+        class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
+      >
+        Key and Password
+      </h2> 
+      <div
+        class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800"
+      >
+        <label class="block text-sm">
+          <span class="text-gray-700 dark:text-gray-400">Key</span><span class="text-red-600">*</span>
+          {{form.key}} 
+        </label>
+        {%if form.key.errors%}
+          <span class="text-xs text-red-600 dark:text-red-400">
+            {{form.key.errors}}
+          </span>
+          {%endif%}
+
+        <label class="block text-sm mt-4">
+            <span class="text-gray-700 dark:text-gray-400">Password</span><span class="text-red-600">*</span>
+            {{form.password}}
+          </label>
+          {%if form.password.errors%}
+          <span class="text-xs text-red-600 dark:text-red-400">
+            {{form.password.errors}}
+          </span>
+          {%endif%}
+          {%if error%}
+          <span class="text-xs text-red-600 dark:text-red-400">
+            {{error}}
+          </span>
+          {%endif%}
+          <div class="flex items-center justify-end">
+            <button type="submit" class="px-5 py-3 my-6 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                Submit
+              </button>
+          </div>
+        </div>
+    </div>
+</form>
+  </main>
+
+{% endblock %}
