@@ -6,6 +6,12 @@ urlpatterns =[
 
     path('logout/',views.LoginView.as_view(),name='logout'),
 
+    path('forgot-password/',views.ForgotPasswordView.as_view(),name='forgot-password'),
+
+    path('otp/',views.OTPView.as_view(),name='otp'),
+
+    path('change-password/',views.ChangePasswordView.as_view(),name='change-password'),
+
     path('home/',views.HomeView.as_view(),name='home'),
 
     path('add-folder/',views.AddFolderView.as_view(),name='add-folder'),

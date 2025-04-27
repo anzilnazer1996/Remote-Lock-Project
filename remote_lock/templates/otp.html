@@ -40,7 +40,7 @@
               <h1
                 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200"
               >
-                Login
+                OTP
               </h1>
               <form action="" method="post">
                 {%csrf_token%}
@@ -52,35 +52,31 @@
                 /> -->
                 {{form.email}}
               </label>
-              <label class="block mt-4 text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Password</span>
+              <label class="block text-sm">
+                <span class="text-gray-700 dark:text-gray-400">OTP</span>
                 <!-- <input
                   class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                  placeholder="***************"
-                  type="password"
+                  placeholder="Jane Doe"
                 /> -->
-                {{form.password}}
+                {{form.otp}}
               </label>
-
               <!-- You should use a button here, as the anchor is only used for the example  -->
               <button
                 class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
                 type="submit"
               >
-                Log in
+                Verify
               </button>
-              {%if error%}
-              <p class="text-xs text-red-600 dark:text-red-400">{{error}}</p>
-              {%endif%}
             </form>
 
+            {%if error%}
+                <span class="mt-2 text-red-600 dark:text-red-400">
+                  {{error}}
+                </span>
+                {%endif%}
+
             <div class="mt-2 flex items-center justify-center text-purple-600">
-              <div style="margin-right: 25px;">
-                <a  href="{%url 'register'%}">new registration</a>
-              </div>
-              <div>
-                <a href="{%url 'forgot-password'%}">forgot password ?</a>
-              </div>  
+                <p id="timer"></p>
             </div>
 
               <hr class="my-8" />
@@ -90,4 +86,30 @@
       </div>
     </div>
   </body>
+  <script>
+    let timeLeft = parseInt('{{ remaining_time|default:0 }}');
+    let timerElement = document.getElementById('timer');
+
+    function updateTimer() {
+        if (timeLeft <= 0) {
+            timerElement.innerHTML = `
+                <form method="post" action="{% url 'forgot-password' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="email" value="{{ form.email.value }}">
+                    <button type="submit" class="text-sm text-purple-600 hover:underline">
+                        Resend OTP
+                    </button>
+                </form>
+            `;
+        } else {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            timerElement.innerText = `Time left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+    }
+
+    updateTimer();
+</script>
 </html>

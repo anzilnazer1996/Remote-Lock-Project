@@ -6,7 +6,7 @@ from django.shortcuts import render,redirect
 
 from django.views import View
 
-from .forms import LoginForm,KeyPasswordForm,RegisterForm
+from .forms import LoginForm,KeyPasswordForm,RegisterForm,ForgotPasswordForm,OTPForm,ChangePasswordForm
 
 from django.contrib.auth import authenticate,logout,login
 
@@ -29,6 +29,10 @@ from django.http import HttpResponse
 from django.conf import settings
 
 from django.contrib.auth.models import User
+
+import random
+
+from django.utils import timezone
 
 
 
@@ -81,6 +85,154 @@ class LogoutView(View):
 
         return redirect('login')
     
+
+class ForgotPasswordView(View):
+
+    def get(self,request,*args,**kwargs):
+
+        form = ForgotPasswordForm()
+
+        if request.user.is_authenticated:
+
+            form = ForgotPasswordForm(initial={'email':request.user.email})
+
+        data = {'form':form}
+
+        return render(request,'forgot-password.html',context=data)
+    
+    def post(self,request,*args,**kwargs):
+
+        form = ForgotPasswordForm(request.POST)
+
+        error = None
+
+        if form.is_valid():
+
+            email = form.cleaned_data.get('email')
+
+            user = User.objects.get(username=email)
+
+            otp = random.randint(100000, 999999)
+
+            request.session['otp'] = str(otp)
+
+            request.session['otp_email'] = email
+
+            request.session['otp_time'] = timezone.now().timestamp()
+
+            subject = 'Forgot Password'
+
+            recepient = user.email
+
+            template = 'otp-email.html'
+
+            context = {'name':f'{user.first_name} {user.last_name}','otp':otp}
+
+            thread = threading.Thread(target=send_email,args=(subject,recepient,template,context))
+
+            thread.start()
+            
+            return redirect('otp')  
+            
+        data = {'form':form,'error':error}
+
+        return render(request,'forgot-password.html',context=data)
+
+
+class OTPView(View):
+    def get(self, request, *args, **kwargs):
+        email = request.session.get('otp_email', '')
+        form = OTPForm(initial={'email': email})
+
+        # Calculate time left (for countdown)
+        remaining_time = 0
+        if 'otp_time' in request.session:
+            elapsed = timezone.now().timestamp() - request.session['otp_time']
+            remaining_time = max(0, 300 - int(elapsed))  # 5 minutes = 300 seconds
+
+        return render(request, 'otp.html', {
+            'form': form,
+            'remaining_time': remaining_time,
+        })
+
+    def post(self, request, *args, **kwargs):
+        form = OTPForm(request.POST)
+        error = None
+        remaining_time = 0
+
+        if form.is_valid():
+            otp = form.cleaned_data.get('otp')
+            real_otp = request.session.get('otp')
+            otp_time = request.session.get('otp_time')
+
+            if otp_time:
+                elapsed = timezone.now().timestamp() - otp_time
+                remaining_time = max(0, 300 - int(elapsed))
+
+                if elapsed > 300:
+                    error = 'OTP expired.'
+                elif otp == real_otp:
+                    # OTP is valid
+                    request.session.pop('otp', None)
+                    request.session.pop('otp_time', None)
+                    return redirect('change-password')
+                else:
+                    error = 'Invalid OTP.'
+
+        return render(request, 'otp.html', {
+            'form': form,
+            'error': error,
+            'remaining_time': remaining_time,
+        })
+
+
+class ChangePasswordView(View):
+
+    def get(self,request,*args,**kwargs):
+
+        form = ChangePasswordForm()
+
+        data = {'form':form}
+
+        return render(request,'change-password.html',context=data)
+    
+    def post(self,request,*args,**kwargs):
+
+        form = ChangePasswordForm(request.POST)
+
+        error = None
+
+        if form.is_valid():
+
+            password = form.cleaned_data.get('password')
+
+            email = request.session['otp_email']
+
+            user = User.objects.get(username=email)
+
+            user.set_password(password)
+
+            user.save()
+
+            subject = 'Password Changed'
+
+            recepient = user.email
+
+            template = 'password-change-email.html'
+
+            context = {'name':f'{user.first_name} {user.last_name}'}
+
+            thread = threading.Thread(target=send_email,args=(subject,recepient,template,context))
+
+            thread.start()
+            
+            return redirect('login')  
+            
+        data = {'form':form,'error':error}
+
+        return render(request,'change-password.html',context=data)
+
+
 class HomeView(View):
     def get(self,request,*args,**kwargs):
 

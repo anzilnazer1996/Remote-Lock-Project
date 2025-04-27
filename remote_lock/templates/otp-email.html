@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Unlock</title>
+    <title>OTP Verification</title>
     <style>
         @media only screen and (max-width: 600px) {
             .email-container {
@@ -18,21 +17,15 @@
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" class="email-container" style="background-color: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <tr>
                 <td align="center" style="padding-bottom: 20px;">
-                    <h2 style="margin: 0; color: #333;">Password Successfully Changed</h2>
+                    <h2 style="margin: 0; color: #333;">Password Reset Request</h2>
                 </td>
             </tr>
             <tr>
                 <td>
                     <p style="font-size: 16px; color: #555;">Hi {{ name }},</p>
-                    {%if email_for == 'unlock'%}
-                    <p style="font-size: 16px; color: #555;">You are requested unlock your folder {{folder_name}}</p>
-                    {%elif email_for == 'delete'%}
-                    <p style="font-size: 16px; color: #555;">You are requested delete your folder {{folder_name}}</p>
-                    {%elif email_for == 'download'%}
-                    <p style="font-size: 16px; color: #555;">You are requested download your folder {{folder_name}}</p>
-                    {%endif%}
-                    <p style="font-size: 16px; color: #555;">Key:{{key}}</p>
-                    <p style="font-size: 16px; color: #555;">Password:{{password}}</p>
+                    <p style="font-size: 16px; color: #555;">We received a request to reset your password. Use the OTP below to proceed:</p>
+                    <p style="font-size: 24px; font-weight: bold; color: #2d89ef; text-align: center; padding: 20px 0;">{{ otp }}</p>
+                    <p style="font-size: 16px; color: #555;">If you did not make this request, please ignore this email or contact support.</p>
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="{% url 'login' %}" style="background-color: #2d89ef; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Go to Login</a>
                     </div>
