@@ -34,6 +34,10 @@ import random
 
 from django.utils import timezone
 
+from django.utils.decorators import method_decorator
+
+from django.contrib.auth.decorators import login_required
+
 
 
 class LoginView(View):
@@ -232,7 +236,7 @@ class ChangePasswordView(View):
 
         return render(request,'change-password.html',context=data)
 
-
+@method_decorator(login_required(login_url=reverse_lazy('login')),name='dispatch')
 class HomeView(View):
     def get(self,request,*args,**kwargs):
 
@@ -245,8 +249,9 @@ class HomeView(View):
 
         data = {'folders':folders,'page':'home','query':query}
 
-        return render(request, 'home.html',context=data)    
-
+        return render(request, 'home.html',context=data) 
+       
+@method_decorator(login_required(login_url=reverse_lazy('login')),name='dispatch')
 class AddFolderView(View):
     def get(self,request,*args,**kwargs):
 
@@ -276,7 +281,7 @@ class AddFolderView(View):
 
             return render(request, 'add-folder.html', {'error': 'name and files are required'})    
 
-
+@method_decorator(login_required(login_url=reverse_lazy('login')),name='dispatch')
 class UnlockingView(View):
 
     def get(self,request,*args,**kwargs):
@@ -355,7 +360,7 @@ class UnlockingView(View):
         
         return render(request,'unlock.html',context={'form':form})
 
-
+@method_decorator(login_required(login_url=reverse_lazy('login')),name='dispatch')
 class LockView(View):
 
     def get(self,request,*args,**kwargs):
@@ -370,8 +375,9 @@ class LockView(View):
 
         Reports.objects.create(user=request.user,folder_name=folder.name,action='Locked')
 
-        return redirect('home') 
-
+        return redirect('home')
+     
+@method_decorator(login_required(login_url=reverse_lazy('login')),name='dispatch')
 class DeleteView(View):
 
     def get(self,request,*args,**kwargs):
@@ -449,7 +455,7 @@ class DeleteView(View):
         
         return render(request,'unlock.html',context={'form':form})
 
-
+@method_decorator(login_required(login_url=reverse_lazy('login')),name='dispatch')
 class FolderFilesView(View):
 
     def get(self,request,*args,**kwargs):
@@ -462,6 +468,7 @@ class FolderFilesView(View):
 
         return render(request,'folder-with-files.html',context={'folder':folder})
 
+@method_decorator(login_required(login_url=reverse_lazy('login')),name='dispatch')
 class DownloadFolderView(View):
 
     def get(self,request,*args,**kwargs):
@@ -528,7 +535,7 @@ class RegisterView(View):
 
         return render(request,'register.html',context=data)
 
-
+@method_decorator(login_required(login_url=reverse_lazy('login')),name='dispatch')
 class ReportsListView(View):
 
     def get(self,request,*args,**kwargs):
